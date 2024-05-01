@@ -2,7 +2,7 @@ import { StatusBar } from 'expo-status-bar';
 import { Button, FlatList, Image, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useCallback, useEffect, useState } from 'react'
 import CardList from '@components/CardList'
-import Menu from '@components/Menu'
+import Menu from '@components/CustomMenu'
 import { FAB } from "react-native-paper"
 import { router, useFocusEffect } from 'expo-router'
 import { createTable, getCards, createCard, deleteCard } from '../lib/db';

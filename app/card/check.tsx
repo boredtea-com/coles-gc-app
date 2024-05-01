@@ -1,21 +1,19 @@
 import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
-import { useEffect, useState } from "react";
 import { Button, Image, Pressable, StyleSheet, Text, View } from "react-native"
 import { cards, deleteCard, updateCard } from "../../lib/db";
 import { useCardCollectionStore, useCardStore } from "../../store/card";
 import { WebView } from 'react-native-webview';
-import Constants from 'expo-constants';
 
 export default function Check() {
     let webview: WebView | null = null
     const router = useRouter()
-    const params: Partial<{index: number}> = useLocalSearchParams()
+    const params: Partial<{ index: number }> = useLocalSearchParams()
     const setCard = useCardStore((store) => store.setCard)
     const card = useCardStore((state) => state.card)
 
     const updateCardBalance = useCardCollectionStore((store) => store.updateCardBalance)
 
-    const {index } = params
+    const { index } = params
 
     const runFirst = `
         document.getElementById("cardNumber").scrollIntoView();
@@ -43,19 +41,18 @@ export default function Check() {
                 let elem = transHistTD[x]
                 let split = elem.innerText.split("\\n");
                 history[split[0]] = split[1];
-                console.log(elem.innerText)
-
             }
             translatedHistory.push(history);
         }
 
-        window.ReactNativeWebView.postMessage(JSON.stringify({type: "summary", balance, expiryDate, status, transactionHistory}));
+        window.ReactNativeWebView.postMessage(JSON.stringify({type: "summary", balance, expiryDate, status, translatedHistory}));
     })();`;
 
     const updateCardDetails = (data) => {
 
         let newBalance = parseFloat(data.balance?.slice(1)) ?? card.balance
         let newExpiryDate = data.expiryDate ?? card.expiryDate
+        console.log(data.translatedHistory)
 
         updateCard(card.id, newBalance, newExpiryDate, setCard)
         updateCardBalance(index, newBalance)
@@ -66,7 +63,7 @@ export default function Check() {
         const { url } = newNavState;
         if (!url) return;
 
-        if(url.includes("TransactionHistory")) {
+        if (url.includes("TransactionHistory")) {
             webview.injectJavaScript(INJECTED_JAVASCRIPT)
         }
     }
@@ -80,7 +77,7 @@ export default function Check() {
             onNavigationStateChange={handleWebViewNavigationStateChange}
             onMessage={(event) => {
                 let data = JSON.parse(event.nativeEvent.data)
-                if(data?.type == "summary") {
+                if (data?.type == "summary") {
                     updateCardDetails(data)
                 }
             }}

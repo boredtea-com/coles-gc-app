@@ -6,14 +6,14 @@ import { Drawer } from 'expo-router/drawer';
 import HeaderOption from "../components/HeaderOption";
 import { DarkTheme, LightTheme } from "../lib/theme"
 import { PaperProvider } from 'react-native-paper';
-import Menu from "@components/Menu";
+import CustomNavigationBar from "@components/CustomNavigationBar";
 
 export default function HomeLayout() {
     return (
         <PaperProvider>
             <View style={{ flex: 1 }}>
                 <Stack screenOptions={{
-                    headerRight: () => <HeaderOption />
+                    header: (props: any) => <CustomNavigationBar {...props} />
                 }}>
                     <Stack.Screen
                         name="index" // This is the name of the page and must match the url from root

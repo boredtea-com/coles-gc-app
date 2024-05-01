@@ -1,5 +1,5 @@
-import { Button, FAB, HelperText, RadioButton, TextInput } from "react-native-paper"
-import { StyleSheet, Text, View } from "react-native"
+import { Button, FAB, HelperText, RadioButton, TextInput, Text } from "react-native-paper"
+import { StyleSheet, View } from "react-native"
 import { useEffect, useState } from "react"
 import { createCard } from "../../lib/db"
 import { useLocalSearchParams, useNavigation, useRouter } from "expo-router"
@@ -70,11 +70,15 @@ export default function addCard () {
 
   return (
       <View style={styles.addPage}>
-        <View style={{paddingBottom: 15}}>
-          <RadioButton.Group onValueChange={value => setCardType(value)} value={cardType}>
-            <RadioButton.Item label="Gift Card" value="gc" />
-            <RadioButton.Item label="Flybuys" value="flybuys" />
-          </RadioButton.Group>
+        <View style={{paddingBottom: 15, flexDirection: "row", justifyContent: 'space-around', width: '100%'}}>
+          <View style={{flexDirection: "row", alignItems: 'center'}}>
+            <Text>Gift Card</Text>
+            <RadioButton value="gc" status={ cardType === 'gc' ? 'checked' : 'unchecked' } onPress={() => setCardType('gc')}/>
+          </View>
+          <View style={{flexDirection: "row", alignItems: 'center'}}>
+            <Text>FlyBuys</Text>
+            <RadioButton value="flybuys" status={ cardType === 'flybuys' ? 'checked' : 'unchecked'  } onPress={() => setCardType('flybuys')} />
+          </View>
         </View>
         
         <TextInput
@@ -83,7 +87,7 @@ export default function addCard () {
           value={cardName}
           mode="flat"
           onChangeText={text => setCardName(text)}
-          style={styles.cardName}
+          style= {styles.textInput}
         />
         
 
@@ -96,9 +100,6 @@ export default function addCard () {
           onChangeText={text => setCardNum(text.replaceAll(" ", ""))}
           keyboardType="number-pad"
         />
-        <HelperText type="error" visible={hasErrors().hasError}>
-          {hasErrors().message ?? ''}
-        </HelperText>
 
         <TextInput
           left={<TextInput.Icon icon={"text-short"} />}
@@ -106,6 +107,7 @@ export default function addCard () {
           value={cardDesc}
           mode="outlined"
           onChangeText={text => setCardDesc(text)}
+          style= {styles.textInput}
         />
 
         {
@@ -118,6 +120,7 @@ export default function addCard () {
               mode="outlined"
               onChangeText={text => setCardBalance(text)}
               keyboardType="number-pad"
+              style= {styles.textInput}
             /> 
             <TextInput
               left={<TextInput.Icon icon={"text-short"} />}
@@ -127,9 +130,15 @@ export default function addCard () {
               onChangeText={text => setCardPin(text)}
               maxLength={4}
               keyboardType="number-pad"
+              style= {styles.textInput}
             /> 
           </View>
         }
+
+        <HelperText type="error" visible={hasErrors().hasError}>
+          {hasErrors().message ?? ''}
+        </HelperText>
+
         <Button mode="contained" style={styles.submitButton} disabled={hasErrors().hasError} onPress={() => {
           addCard()
           navigation.dispatch({type: 'POP_TO_TOP'})
@@ -145,8 +154,8 @@ const styles = StyleSheet.create({
     padding: 10,
     flex: 1
   },
-  cardName: {
-    marginBottom: 30
+  textInput: {
+    marginBottom: 2
   },
   submitButton: {
     position: "absolute",

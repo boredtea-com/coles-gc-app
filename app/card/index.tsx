@@ -40,11 +40,11 @@ export default function Page() {
                 <Text style={styles.cardHeader}>Last Used</Text>
                 <Text style={styles.cardInfo}>{card?.lastUsed ?? '-'}</Text>
                 <View style={{flexGrow: 1}}></View>
-                <Text style={styles.cardInfo}>Last Checked: {card?.lastChecked ?? '-'}</Text>
-                <Button  title='Check Balance' onPress={() =>{ 
+
+                <Text style={styles.lastCheck}>Last Checked: {card?.lastChecked ?? '-'}</Text>
+                <Button title='Check Balance' onPress={() =>{ 
                     router.push({pathname: 'card/check', params: {index}})
                 }}></Button>
-                <View style={{padding: 10}}></View>
             </View>
         </Pressable>
     )
@@ -73,5 +73,10 @@ const styles = StyleSheet.create({
     cardInfo: {
         fontSize: 20,
         paddingBottom: 10
+    },
+    lastCheck: {
+        paddingBottom: 10,
+        textAlign: "center",
+        fontSize: 15
     }
 })

@@ -1,6 +1,6 @@
 import { Link } from "expo-router";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { cards, cardsList } from "../lib/db";
+import { cardsList } from "../lib/db";
 
 
 export default function CardItem({card, index}:{card: cardsList, index:number}) {
@@ -9,7 +9,7 @@ export default function CardItem({card, index}:{card: cardsList, index:number}) 
             pathname: '/card',
             params: {...card, index}
         }} asChild>
-        <Pressable onLongPress={() => alert("Long pressed")}>
+        <Pressable>
             <View style={styles.cardWrapper}>
                 <Text style={styles.cardName}>{card.name}</Text>
                 <Text style={styles.cardAmount}>${card.balance}</Text>

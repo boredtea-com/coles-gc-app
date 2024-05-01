@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Pressable, StyleSheet, Text } from "react-native"
 import { AntDesign } from "@expo/vector-icons"
-import Menu from "./Menu";
+import Menu from "./CustomMenu";
 
 export default function HeaderOption() {
     const [triggerSetting, setTriggerSetting] = useState(false)
