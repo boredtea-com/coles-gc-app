@@ -1,35 +1,39 @@
 import { Button, FAB, HelperText, RadioButton, TextInput } from "react-native-paper"
 import { StyleSheet, Text, View } from "react-native"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { createCard } from "../../lib/db"
 import { useLocalSearchParams, useNavigation, useRouter } from "expo-router"
+import { useCardCollectionStore } from "../../store/card"
 
 let size = {
-  gc: {
-    min: 16,
-    max: 20
-  },
-  flybuys: {
-    min: 13
-  }
+  gc: 30,
+  flybuys: 13
 }
 
 export default function addCard () {
   const navigation = useNavigation()
+  const router = useRouter()
+
   const params = useLocalSearchParams()
 
-  const {nextId} = params
+  const {nextId, cameraNum} = params
 
   const [cardType, setCardType] = useState('gc')
-  const [cardNum, setCardNum] = useState('')
   const [cardName, setCardName] = useState('')
   const [cardBalance, setCardBalance] = useState('')
   const [cardDesc, setCardDesc] = useState('')
   const [cardPin, setCardPin] = useState('')
 
+  const cardNum = useCardCollectionStore((state) => state.cardNum)
+  const setCardNum = useCardCollectionStore((state) => state.addCardNum)
+  const addNewCard = useCardCollectionStore((state) => state.addCard)
+
+  useEffect(() => {
+    setCardNum('')
+  }, [])
+
   const hasErrors = () => {
     let isnum = /^\d+$/.test(cardNum);
-
     if(cardNum.length && !isnum) {
       return {
         hasError: true,
@@ -39,13 +43,13 @@ export default function addCard () {
 
     if(cardType == "gc") {
       return {
-        hasError: cardNum.length < size.gc.min || cardNum.length > size.gc.max,
-        message: `Card number must be between ${size.gc.min} and ${size.gc.max} digits`
+        hasError: cardNum.length != size.gc,
+        message: `Card number must ${size.gc} digits`
       }
     } else {
       return {
-        hasError: cardNum.length < size.flybuys.min,
-        message: `Card number must be at least ${size.flybuys.min} digits`
+        hasError: cardNum.length < size.flybuys,
+        message: `Card number must be at least ${size.flybuys} digits`
       }
     }
   };
@@ -61,7 +65,7 @@ export default function addCard () {
       pin: cardPin
     }
 
-    createCard(data)
+    createCard(data, addNewCard)
   }
 
   return (
@@ -85,11 +89,11 @@ export default function addCard () {
 
         <TextInput
           left={<TextInput.Icon icon={"card-text"} />}
-          right={<TextInput.Icon icon={"camera-iris"}/>}
+          right={<TextInput.Icon icon={"camera-iris"} onPress={() => {router.push("/camera")}}/>}
           label={"Card Number*"}
           value={cardNum}
           mode="outlined"
-          onChangeText={text => setCardNum(text)}
+          onChangeText={text => setCardNum(text.replaceAll(" ", ""))}
           keyboardType="number-pad"
         />
         <HelperText type="error" visible={hasErrors().hasError}>

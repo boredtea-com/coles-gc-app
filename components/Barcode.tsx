@@ -1,5 +1,5 @@
 import React, { createRef, useEffect, useLayoutEffect, useState } from "react"
-import { Pressable, View, Text, StyleSheet } from "react-native"
+import { Pressable, View, Text, StyleSheet, Dimensions } from "react-native"
 import 'react-zlib-js' // side effects only
 import { code128 } from 'bwip-js'
 import bwipjs from 'bwip-js';
@@ -17,12 +17,12 @@ const BarCode = async (options) => {
         // `e` may be a string or Error object
     }
     //`data:image/svg+xml;utf8,${encodeURIComponent(svg)}`
-    let [ , width, height ] = /viewBox="0 0 (\d+) (\d+)"/.exec(svg);
+    let [ , w, height ] = /viewBox="0 0 (\d+) (\d+)"/.exec(svg);
     const buff = Buffer.from(svg);
     const base64data = buff.toString('base64');
     return (
         <Image
-            style={{ height: Number(height), width:Number(width), backgroundColor: '#ffffff' }}
+            style={{ height: Number(height), width:'100%', backgroundColor: '#ffffff' }}
             source={`data:image/svg+xml;base64,${base64data}`}
         />
     );
@@ -34,7 +34,6 @@ export default function Barcode({
     height
 }) {
     let [img, setImg] = useState(null)
-
     const copyToClipboard = async () => {
         await Clipboard.setStringAsync(barcode as string);
     };
@@ -42,13 +41,13 @@ export default function Barcode({
 
     useEffect(() => {
         (async () => {
-            setImg(await BarCode({text: barcode, scale, height ,  bcid: 'code128'}))
+            setImg(await BarCode({text: barcode, scale, height,  bcid: 'code128'}))
         })()
     }, [])
 
     return (
         <View style={styles.barcodeWrapper}>
-            <Pressable>
+            <Pressable style={{width: '100%'}}>
                 {img ?? <Text>Cannot show image</Text>}
             </Pressable>
             <Pressable onPress={copyToClipboard}>
@@ -66,7 +65,7 @@ const styles = StyleSheet.create({
         borderColor: '#fff',
         borderWidth: 1,
         borderRadius: 3,
-        paddingTop: 30
+        paddingTop: 30,
     },
     cardNo: {
         paddingTop: 10,

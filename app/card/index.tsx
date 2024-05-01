@@ -4,14 +4,23 @@ import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Button, Image, Pressable, StyleSheet, Text, View } from "react-native";
 import * as Brightness from 'expo-brightness';
-import { cards, deleteCard } from "../../lib/db";
+import { cards, cardsList, deleteCard, getCard } from "../../lib/db";
+import { useCardCollectionStore, useCardStore } from "../../store/card";
 
 export default function Page() {
     const navigation = useNavigation()
     const router = useRouter()
-    const params: Partial<cards> = useLocalSearchParams()
+    const params: Partial<cardsList & {index: number}> = useLocalSearchParams()
+    const { name, balance, id, number, index } = params
 
-    const { name, balance, id, number, pin, desc, lastUsed, lastChecked } = params
+    const deleteCardState = useCardCollectionStore((state) => state.deleteCard)
+    const card = useCardStore((state) => state.card)
+
+    const setCard = useCardStore((state) => state.setCard)
+
+    useEffect(() => {
+        getCard(id, setCard)
+    }, [])
 
     const [revealPin, setRevealPin] = useState(false)
 
@@ -21,22 +30,31 @@ export default function Page() {
                 <Barcode barcode={number} scale={2} height={15}/>
                 <Divider dividerStyle={{marginBottom: 10}}/>
                 <Text style={styles.cardHeader}>PIN</Text>
-                <Text style={[styles.cardPin, {paddingBottom: 10}]}>{!revealPin ? '****' : pin}</Text>
+                <Text style={[styles.cardPin, {paddingBottom: 10}]}>{!revealPin ? '****' : card?.pin}</Text>
                 <Text style={styles.cardHeader}>Description</Text>
-                <Text style={{paddingBottom: 10}}>{desc}</Text>
+                <Text style={{paddingBottom: 10}}>{card?.desc.length ? card.desc : '-'}</Text>
                 <Text style={styles.cardHeader}>Balance</Text>
-                <Text style={styles.cardAmount}>${balance}</Text>
+                <Text style={styles.cardInfo}>${card?.balance}</Text>
+                <Text style={styles.cardHeader}>Expiry</Text>
+                <Text style={styles.cardInfo}>{card?.expiryDate ?? '-'}</Text>
+                <Text style={styles.cardHeader}>Last Used</Text>
+                <Text style={styles.cardInfo}>{card?.lastUsed ?? '-'}</Text>
                 <View style={{flexGrow: 1}}></View>
-                <Button title='Delete Card' onPress={() =>{ 
-                    deleteCard(id)
-                    router.back()
+                <Text style={styles.cardInfo}>Last Checked: {card?.lastChecked ?? '-'}</Text>
+                <Button  title='Check Balance' onPress={() =>{ 
+                    router.push({pathname: 'card/check', params: {index}})
                 }}></Button>
-
+                <View style={{padding: 10}}></View>
             </View>
         </Pressable>
     )
 }
 
+//<Button title='Delete Card' onPress={() =>{ 
+//                    deleteCard(id)
+//                    deleteCardState(id)
+//                    router.back()
+//                }}></Button>
 const styles = StyleSheet.create({
     cardPage: {
         //alignItems: 'center',
@@ -45,14 +63,15 @@ const styles = StyleSheet.create({
         padding: 20
     },
     cardHeader: {
-        fontWeight: '200',
+        fontWeight: "600",
         fontSize: 20,
     },
     cardPin: {
         fontSize: 20,
         paddingBottom: 10
     },
-    cardAmount: {
+    cardInfo: {
         fontSize: 20,
+        paddingBottom: 10
     }
 })

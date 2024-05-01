@@ -6,24 +6,25 @@ import Menu from '@components/Menu'
 import { FAB } from "react-native-paper"
 import { router, useFocusEffect } from 'expo-router'
 import { createTable, getCards, createCard, deleteCard } from '../lib/db';
+import { useCardCollectionStore } from '../store/card';
 
 export default function App() {
-  const [data, setCards] = useState([])
+  const cards = useCardCollectionStore((state) => state.cards)
+  const setCards =  useCardCollectionStore((state) => state.setCards)
 
-  const nextId = (data[data.length -1]?.id ?? 0) + 1
+  const nextId = (cards[cards.length -1]?.id ?? 0) + 1
 
-  useFocusEffect(
-    useCallback(() => {
-      createTable()
-      getCards(setCards)
-    }, [])
-  )
+  useEffect(() => {
+    createTable()
+    getCards(setCards)
+  }, [])
+
 
   return (
     <View style={styles.container}>
         <StatusBar style="auto" />
         <View style={{padding: 10}}></View>
-        <CardList cards={data}/>
+        <CardList cards={cards}/>
         <FAB
             icon="plus"
             style={styles.fab}
@@ -48,6 +49,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     margin: 16,
     right: 0,
-    bottom: 0,
+    bottom: 5,
   }
 });

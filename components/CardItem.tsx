@@ -1,13 +1,13 @@
 import { Link } from "expo-router";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { cards } from "../lib/db";
+import { cards, cardsList } from "../lib/db";
 
 
-export default function CardItem(card: cards) {
+export default function CardItem({card, index}:{card: cardsList, index:number}) {
     return (
         <Link href={{
             pathname: '/card',
-            params: card
+            params: {...card, index}
         }} asChild>
         <Pressable onLongPress={() => alert("Long pressed")}>
             <View style={styles.cardWrapper}>

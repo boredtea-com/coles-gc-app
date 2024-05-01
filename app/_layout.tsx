@@ -38,6 +38,17 @@ export default function HomeLayout() {
                             title: "Add Card"
                         }}
                     />
+                    <Stack.Screen
+                        name="card/check" // This is the name of the page and must match the url from root,
+                        options={{
+                            title: "Check Balance"
+                        }}
+                    />
+                    <Stack.Screen
+                        name="camera" // This is the name of the page and must match the url from root
+                        options={{
+                        }} 
+                    />
                 </Stack>
             </View>
         </PaperProvider>
