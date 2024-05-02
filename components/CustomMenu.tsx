@@ -5,12 +5,23 @@ import { Appbar, Menu } from "react-native-paper";
 
 
 
-export default function CustomMenu () {
+export default function CustomMenu ({menuItems}: {menuItems?: {onPress, title}[]}) {
     const router = useRouter()
 
     const [visible, setVisible] = useState(false)
     const openMenu = () => setVisible(true);
     const closeMenu = () => setVisible(false);
+    
+    const customMenuItems = menuItems?.map(o => 
+        <Menu.Item
+            onPress={() => {
+                closeMenu()
+                o.onPress()
+            }}
+            title={o.title}
+            key={o.title}
+        />
+    )
 
     return (
         <Menu
@@ -21,29 +32,17 @@ export default function CustomMenu () {
                   icon="dots-vertical"
                   onPress={openMenu}
                 />
-              }
+            }
         >
-            <Menu.Item
-                onPress={() => {
-                    closeMenu()
-                    router.push("about")
-                }}
-                title="About"
-            />
-
+            {customMenuItems ??
+                <Menu.Item
+                    onPress={() => {
+                        closeMenu()
+                        router.push("about")
+                    }}
+                    title="About"
+                />
+            }
         </Menu>
     )
 }
-
-
-const styles = StyleSheet.create({
-    menuOptionWrapper: {
-        backgroundColor: '#d4d2d2',
-        position: 'absolute',
-        top: 25,
-        right: 100,
-        flex: 1,
-        height: 100,
-        width: 100
-    }
-})

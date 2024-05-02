@@ -3,8 +3,8 @@ import { Button, FlatList, Image, StyleSheet, Text, TextInput, View } from 'reac
 import { useCallback, useEffect, useState } from 'react'
 import CardList from '@components/CardList'
 import Menu from '@components/CustomMenu'
-import { FAB } from "react-native-paper"
-import { router, useFocusEffect } from 'expo-router'
+import { FAB, useTheme } from "react-native-paper"
+import { SplashScreen, router, useFocusEffect } from 'expo-router'
 import { createTable, getCards, createCard, deleteCard } from '../lib/db';
 import { useCardCollectionStore } from '../store/card';
 
@@ -17,11 +17,17 @@ export default function App() {
   useEffect(() => {
     createTable()
     getCards(setCards)
+
+    setTimeout(() => {
+      // When all loading is setup, unmount the splash screen component.
+      SplashScreen.hideAsync();
+    }, 1);
+
   }, [])
 
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container]}>
         <StatusBar style="auto" />
         <View style={{padding: 10}}></View>
         <CardList cards={cards}/>
@@ -37,7 +43,7 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    //backgroundColor: '#fff',
     fontFamily: 'monospace'
   },
   item: {

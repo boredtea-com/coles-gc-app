@@ -1,8 +1,7 @@
 import { CameraView, CameraType, useCameraPermissions } from 'expo-camera/next';
 import { useState } from 'react';
-import { Button, StyleSheet, Text, TouchableOpacity, View, Dimensions, Pressable } from 'react-native'
-import { useNavigation, useRouter } from 'expo-router';
-import { FontAwesome } from '@expo/vector-icons';
+import { Button, StyleSheet, Text, View, Dimensions } from 'react-native'
+import { useRouter } from 'expo-router';
 import { FAB } from 'react-native-paper';
 import { useCardCollectionStore } from '../store/card';
 
@@ -29,10 +28,6 @@ export default function BarcodeCamera() {
             <Button onPress={requestPermission} title="grant permission" />
         </View>
         );
-    }
-
-    function toggleCameraType() {
-        setFacing(current => (current  === 'back' ? 'front' : 'back'));
     }
 
     return (

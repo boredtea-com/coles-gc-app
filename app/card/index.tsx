@@ -1,17 +1,20 @@
 import Barcode from "@components/Barcode";
 import Divider from "@components/Divider";
-import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
+import { Stack, useLocalSearchParams, useNavigation, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { Button, Image, Pressable, StyleSheet, Text, View } from "react-native";
+import { Image, Pressable, StyleSheet, View } from "react-native";
 import * as Brightness from 'expo-brightness';
 import { cards, cardsList, deleteCard, getCard } from "../../lib/db";
 import { useCardCollectionStore, useCardStore } from "../../store/card";
+import { useTheme, Button, Text, Menu } from "react-native-paper";
+import CustomNavigationBar from "@components/CustomNavigationBar";
+import CustomDialog from "@components/CustomDialog";
 
 export default function Page() {
-    const navigation = useNavigation()
     const router = useRouter()
     const params: Partial<cardsList & {index: number}> = useLocalSearchParams()
     const { name, balance, id, number, index } = params
+    const [showDialog, setShowDialog] = useState(false)
 
     const deleteCardState = useCardCollectionStore((state) => state.deleteCard)
     const card = useCardStore((state) => state.card)
@@ -24,11 +27,46 @@ export default function Page() {
 
     const [revealPin, setRevealPin] = useState(false)
 
+    const menuItems = [
+        {
+            title: "Delete Card",
+            onPress: () => {
+                setShowDialog(true)
+            }
+        },
+        {
+            title: "Edit Card",
+            onPress: () => {
+                router.push({pathname: 'card/edit', params: {index}})
+            }
+        }
+    ]
+
     return (
         <Pressable style={{flex: 1}} onPress={(e) => setRevealPin(!revealPin)}>
+            <CustomDialog 
+                visible={showDialog} 
+                body={"Are you sure you want to delete this card?"} 
+                completeText={'Delete'} 
+                cancelPress={() => setShowDialog(false)}
+                completeButton={() => { 
+                    deleteCard(id)
+                    deleteCardState(id)
+                    router.back()
+                }}
+            />
+            
+            <Stack.Screen
+                options={{
+                    title: name,
+                    animation: 'ios',
+                    header: (props: any) => <CustomNavigationBar {...props} hasCustomMenu={true} menuItems={menuItems}  />
+                }}
+            />
             <View style={styles.cardPage}>
                 <Barcode barcode={number} scale={2} height={15}/>
-                <Divider dividerStyle={{marginBottom: 10}}/>
+                <View style={{padding: 10}}></View>
+
                 <Text style={styles.cardHeader}>PIN</Text>
                 <Text style={[styles.cardPin, {paddingBottom: 10}]}>{!revealPin ? '****' : card?.pin}</Text>
                 <Text style={styles.cardHeader}>Description</Text>
@@ -42,22 +80,27 @@ export default function Page() {
                 <View style={{flexGrow: 1}}></View>
 
                 <Text style={styles.lastCheck}>Last Checked: {card?.lastChecked ?? '-'}</Text>
-                <Button title='Check Balance' onPress={() =>{ 
+                <Button 
+                    mode="contained"
+                    onPress={() =>{ 
                     router.push({pathname: 'card/check', params: {index}})
-                }}></Button>
+                }}>
+                    Check Balance
+                </Button> 
+                <View style={{padding: 10}}></View>
+                <Button
+                    mode="contained"
+                    onPress={() =>{ 
+                        router.push({pathname: 'card/transaction', params: {id: card.id}})
+                }}>
+                    Show Transactions
+                </Button>
             </View>
         </Pressable>
     )
 }
-
-//<Button title='Delete Card' onPress={() =>{ 
-//                    deleteCard(id)
-//                    deleteCardState(id)
-//                    router.back()
-//                }}></Button>
 const styles = StyleSheet.create({
     cardPage: {
-        //alignItems: 'center',
         justifyContent: 'flex-start',
         flex: 1,
         padding: 20

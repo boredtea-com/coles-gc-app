@@ -1,9 +1,5 @@
-import * as FileSystem from 'expo-file-system';
 import * as SQLite from 'expo-sqlite';
-import { Asset } from 'expo-asset';
-
-const tableName = 'cards'
-const db = SQLite.openDatabase('cards.db')
+const db = SQLite.openDatabase('cards3.db')
 
 
 export type cards = {
@@ -17,6 +13,16 @@ export type cards = {
     lastUsed?: string,
     lastChecked?: string,
     expiryDate?: string
+}
+
+export type transaction = {
+    id: string,
+    cardid: number,
+    desc?: string,
+    store: string,
+    amount: string,
+    date: string,
+    balance: string,
 }
 
 export type cardsList = Pick<cards, 'id' | 'balance' | 'name' |'number'>
@@ -35,19 +41,16 @@ export const createTable = () => {
         lastChecked TEXT,
         expiryDate TEXT
     );
-    CREATE TABLE IF NOT EXISTS transactions (
+    `
+    const query2 = `CREATE TABLE IF NOT EXISTS transactions (
         id TEXT PRIMARY KEY,
-        cardId INTEGER,
+        cardid INTEGER,
         desc TEXT,
         store TEXT,
         amount TEXT,
         date TEXT,
-        amount TEXT,
-        balance TEXT,
-        FOREIGN KEY(cardId) REFERENCES cards(id)
-    );
-
-    `
+        balance TEXT
+    );`
 
     const flybuy = `CREATE TABLE IF NOT EXISTS flybuy (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -67,8 +70,15 @@ export const createTable = () => {
             },
             (txObj, error) => {
                 return false
-            }
-            
+            }  
+        )
+        tx.executeSql(query2, [], 
+            (txObj, resultSet) => {
+                console.log(resultSet)
+            },
+            (txObj, error) => {
+                return false
+            }  
         )
     });
 }
@@ -111,15 +121,45 @@ export const getCard  = (id: number, setCard: ((value:any) => void)) => {
     });
 }
 
-export const updateCard  = (id: number, balance, expiryDate, setCard) => {
+export const editCard  = (card: cards, setCard) => {
+    // create table if not exists
+    const query = `UPDATE cards
+    SET balance = ${card.balance ?? null},
+        number = '${card.number}',
+        name = '${card.name}',
+        pin = ${card.pin ?? null}
+    where id = ${card.id}
+    RETURNING *
+    `
+    console.log(query)
+
+    db.transaction(tx => {
+        let resp = tx.executeSql(query, [], 
+            (txObj, resultSet) => {
+                console.log(resultSet)
+                if(resultSet.rows) {
+                    console.log(resultSet.rows.item(0))
+                    setCard(resultSet.rows.item(0))
+                }
+            },
+            //@ts-ignore
+            (txObj, error) => console.log(error)
+            
+        )
+    });
+}
+
+export const updateCard  = (id: number, balance, expiryDate, lastUsed, setCard) => {
     // create table if not exists
     const query = `UPDATE cards
     SET balance = ${balance},
         expiryDate  = '${expiryDate}',
         lastChecked = '${(new Date()).toLocaleString()}'
+        ${lastUsed ? `, lastUsed ='${lastUsed}'`: ''}
     where id = ${id}
     RETURNING *
     `
+    console.log(query)
 
     db.transaction(tx => {
         let resp = tx.executeSql(query, [], 
@@ -162,6 +202,55 @@ export const createCard = (data: {
         let resp = tx.executeSql(query, [data.name, data.type,data.number,data.desc,data.pin,data.balance], 
             (txObj, resultSet) => {
                 setNewCards({id: resultSet.insertId ,...data})
+            },
+            //@ts-ignore
+            (txObj, error) => console.log(error)
+            
+        )
+    });
+}
+
+export const createTransactions = (cardId, transactionArray: transaction[]) => {
+    // create table if not exists
+    let deleteQuery = `DELETE FROM transactions where cardid = ${cardId};`
+    let query = `INSERT INTO transactions (id, cardid, desc, store, amount, date, balance) VALUES`
+    let fields = transactionArray.reduce((allData, data, index) => {
+        query = query + "(?,?,?,?,?,?,?)" + (index != transactionArray.length -1 ? ',' : ';')
+
+        return allData.concat([data.id, data.cardid ,data.desc, data.store,data.amount,data.date, data.balance])
+    }, [])
+
+
+    db.transaction(tx => {        
+        tx.executeSql(deleteQuery, [], 
+            (txObj, resultSet) => {
+            },
+            //@ts-ignore
+            (txObj, error) => console.log(error)
+            
+        )
+        tx.executeSql(query, fields, 
+            (txObj, resultSet) => {
+                console.log(resultSet)
+            },
+            //@ts-ignore
+            (txObj, error) => console.log(error)
+            
+        )
+    });
+}
+
+export const getTransactions = (cardId, setTransactions) => {
+    // create table if not exists
+    let query = `select * from transactions where cardid = ${cardId} order by date desc`
+
+
+    db.transaction(tx => {        
+        tx.executeSql(query, [], 
+            (txObj, resultSet) => {
+                if(resultSet.rows.length) {
+                    setTransactions(resultSet.rows._array)
+                }
             },
             //@ts-ignore
             (txObj, error) => console.log(error)

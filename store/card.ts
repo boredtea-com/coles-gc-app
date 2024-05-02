@@ -16,7 +16,7 @@ interface CardCollectionState {
     setCards: (cards: cards[]) => void
     addCard: (card: cards) => void
     deleteCard: (id: number) => void
-    updateCardBalance: (index: number, balance) => void
+    updateCard: (index: number, data) => void
 }
 
 interface CardState {
@@ -33,9 +33,9 @@ export const useCardCollectionStore = create<CardCollectionState>((set) => ({
     setCards: (cards) =>  set((state) => ({cards: cards})),
     addCard: (card) =>  set((state) => ({cards: [...state.cards, card]})),
     deleteCard: (id) =>  set((state) => ({cards: [...state.cards].filter(o => o.id != id)})),
-    updateCardBalance: (index, balance) => set((state) => {
+    updateCard: (index, data) => set((state) => {
         let cards = [...state.cards]
-        cards[index]["balance"] = balance
+        cards[index] = {...cards[index], ...data}
 
         return {cards: cards}
     })

@@ -1,8 +1,9 @@
 import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
 import { Button, Image, Pressable, StyleSheet, Text, View } from "react-native"
-import { cards, deleteCard, updateCard } from "../../lib/db";
+import { cards, createTransactions, deleteCard, getTransactions, transaction, updateCard } from "../../lib/db";
 import { useCardCollectionStore, useCardStore } from "../../store/card";
 import { WebView } from 'react-native-webview';
+import { useEffect } from "react";
 
 export default function Check() {
     let webview: WebView | null = null
@@ -11,7 +12,7 @@ export default function Check() {
     const setCard = useCardStore((store) => store.setCard)
     const card = useCardStore((state) => state.card)
 
-    const updateCardBalance = useCardCollectionStore((store) => store.updateCardBalance)
+    const updateCardBalance = useCardCollectionStore((store) => store.updateCard)
 
     const { index } = params
 
@@ -40,7 +41,7 @@ export default function Check() {
             for(let x = 0; x < transHistTD.length; x++) {
                 let elem = transHistTD[x]
                 let split = elem.innerText.split("\\n");
-                history[split[0]] = split[1];
+                history[split[0].toLowerCase()] = split[1];
             }
             translatedHistory.push(history);
         }
@@ -49,13 +50,18 @@ export default function Check() {
     })();`;
 
     const updateCardDetails = (data) => {
-
         let newBalance = parseFloat(data.balance?.slice(1)) ?? card.balance
         let newExpiryDate = data.expiryDate ?? card.expiryDate
-        console.log(data.translatedHistory)
+        let newLastUsed = card.lastUsed
 
-        updateCard(card.id, newBalance, newExpiryDate, setCard)
-        updateCardBalance(index, newBalance)
+        const translatedHistory: (Omit<transaction, "id" |'cardid' | "desc"> & {description: string}) [] = data?.translatedHistory ?? []
+        const translationHistory: transaction[] = translatedHistory.map((item, index) => ({...item, id: card.id.toString() + index, cardid: card.id, desc: item.description}))
+
+        if(translatedHistory.length > 1) newLastUsed = translatedHistory[translatedHistory.length - 1]?.date ?? newLastUsed
+
+        updateCard(card.id, newBalance, newExpiryDate, newLastUsed, setCard)
+        updateCardBalance(index, {balance: newBalance})
+        createTransactions(card.id, translationHistory)
         router.back()
     }
 
