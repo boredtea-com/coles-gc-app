@@ -58,13 +58,13 @@ export default function Page() {
             
             <Stack.Screen
                 options={{
-                    title: name,
+                    title: card?.name ?? name,
                     animation: 'ios',
                     header: (props: any) => <CustomNavigationBar {...props} hasCustomMenu={true} menuItems={menuItems}  />
                 }}
             />
             <View style={styles.cardPage}>
-                <Barcode barcode={number} scale={2} height={15}/>
+                <Barcode barcode={card?.number ?? number} scale={2} height={15}/>
                 <View style={{padding: 10}}></View>
 
                 <Text style={styles.cardHeader}>PIN</Text>

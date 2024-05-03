@@ -11,7 +11,7 @@ export default function Check() {
     const setCardStore = useCardStore((store) => store.setCard)
     const cardStored = useCardStore((state) => state.card)
 
-    const [card, setCard] = useState({...cardStored , pin: String(cardStored.pin), balance: String(cardStored.balance)})
+    const [card, setCard] = useState({...cardStored , pin: String(cardStored.pin ?? ''), balance: String(cardStored.balance ?? '')})
 
 
     const cardNum = useCardCollectionStore((state) => state.cardNum)
@@ -24,8 +24,9 @@ export default function Check() {
 
 
     const onSubmit = () => {
-        editCard({...card, pin: card.pin ? Number(card.pin) : undefined, balance: card.balance ? Number(card.balance) : undefined}, setCardStore)
-        updateCardsArray(params.index, {name: card.name, balance: card.balance ? Number(card.balance) : undefined})
+        let data = {...card, pin: card.pin ? Number(card.pin) : undefined, balance: card.balance ? Number(card.balance) : undefined, number: cardNum}
+        editCard(data, setCardStore)
+        updateCardsArray(params.index, data)
         router.back()
     }
 

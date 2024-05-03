@@ -104,12 +104,13 @@ export const getCards  = (setCards: ((value: any[]) => void)) => {
 
 export const getCard  = (id: number, setCard: ((value:any) => void)) => {
     // create table if not exists
-    const query = `SELECT * FROM cards where id = ${id}`
+    const query = `SELECT *
+    FROM cards where id = ${id}`
 
     db.transaction(tx => {
         let resp = tx.executeSql(query, [], 
             (txObj, resultSet) => {
-                console.log("Obtained cards", resultSet?.rows?.length)
+                console.log("Obtained cards", resultSet.rows.item(0))
                 if(resultSet.rows) {
                     setCard(resultSet.rows.item(0))
                 }
@@ -124,21 +125,20 @@ export const getCard  = (id: number, setCard: ((value:any) => void)) => {
 export const editCard  = (card: cards, setCard) => {
     // create table if not exists
     const query = `UPDATE cards
-    SET balance = ${card.balance ?? null},
-        number = '${card.number}',
-        name = '${card.name}',
-        pin = ${card.pin ?? null}
-    where id = ${card.id}
+    SET balance = ?,
+        desc = ?,
+        number = ?,
+        name = ?,
+        pin = ?
+    where id = ?
     RETURNING *
     `
-    console.log(query)
 
     db.transaction(tx => {
-        let resp = tx.executeSql(query, [], 
+        let resp = tx.executeSql(query, [card.balance, card.desc, card.number, card.name, card.pin, card.id], 
             (txObj, resultSet) => {
                 console.log(resultSet)
                 if(resultSet.rows) {
-                    console.log(resultSet.rows.item(0))
                     setCard(resultSet.rows.item(0))
                 }
             },
