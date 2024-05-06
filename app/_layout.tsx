@@ -17,9 +17,6 @@ const { LightTheme, DarkTheme } = adaptNavigationTheme({
 const CombinedDefaultTheme = merge(MD3LightTheme, LightTheme);
 const CombinedDarkTheme = merge(MD3DarkTheme, DarkTheme);
 
-SplashScreen.preventAutoHideAsync();
-
-
 export default function HomeLayout() {
     return (
         <PaperProvider theme={CombinedDarkTheme}>
@@ -29,47 +26,47 @@ export default function HomeLayout() {
                         header: (props: any) => <CustomNavigationBar {...props} />
                     }}>
                         <Stack.Screen
-                            name="index" // This is the name of the page and must match the url from root
+                            name="index" 
                             options={{
                                 title: "Gift Cards",
                                 animation: 'ios'
                             }}      
                         />
                         <Stack.Screen
-                            name="about" // This is the name of the page and must match the url from root
+                            name="about" 
                             options={{
                                 title: "About",
                                 animation: 'ios'
                             }} 
                         />
                         <Stack.Screen
-                            name="card/index" // This is the name of the page and must match the url from root,
+                            name="card/index"
                             // @ts-ignore
                             options={({ route }) => ({ title: route.params.name })}
                         />
                         <Stack.Screen
-                            name="card/add" // This is the name of the page and must match the url from root,
+                            name="card/add"
                             options={{
                                 title: "Add Card",
                                 animation: 'ios'
                             }}
                         />
                         <Stack.Screen
-                            name="card/check" // This is the name of the page and must match the url from root,
+                            name="card/check"
                             options={{
                                 title: "Check Balance",
                                 animation: 'ios'
                             }}
                         />
                         <Stack.Screen
-                            name="card/transaction" // This is the name of the page and must match the url from root,
+                            name="card/transaction"
                             options={{
                                 title: "Card Transaction History",
                                 animation: 'ios'
                             }}
                         />
                         <Stack.Screen
-                            name="camera" // This is the name of the page and must match the url from root
+                            name="camera" 
                             options={{
                                 animation: 'ios'
                             }} 

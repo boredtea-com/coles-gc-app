@@ -12,17 +12,9 @@ export default function App() {
   const cards = useCardCollectionStore((state) => state.cards)
   const setCards =  useCardCollectionStore((state) => state.setCards)
 
-  const nextId = (cards[cards.length -1]?.id ?? 0) + 1
-
   useEffect(() => {
     createTable()
     getCards(setCards)
-
-    setTimeout(() => {
-      // When all loading is setup, unmount the splash screen component.
-      SplashScreen.hideAsync();
-    }, 1);
-
   }, [])
 
 
@@ -34,7 +26,7 @@ export default function App() {
         <FAB
             icon="plus"
             style={styles.fab}
-            onPress={() => router.push({pathname:'/card/add', params: {nextId}})}
+            onPress={() => router.push({pathname:'/card/add', params: {}})}
         />
     </View>
   );
@@ -43,7 +35,6 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    //backgroundColor: '#fff',
     fontFamily: 'monospace'
   },
   item: {
