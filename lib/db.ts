@@ -29,7 +29,7 @@ export type cardsList = Pick<cards, 'id' | 'balance' | 'name' |'number'>
 
 export const createTable = () => {
     // create table if not exists
-    const query = `CREATE TABLE IF NOT EXISTS cards (
+    const cardDb = `CREATE TABLE IF NOT EXISTS cards (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL,
         type TEXT NOT NULL,
@@ -42,7 +42,7 @@ export const createTable = () => {
         expiryDate TEXT
     );
     `
-    const query2 = `CREATE TABLE IF NOT EXISTS transactions (
+    const transactionsDb = `CREATE TABLE IF NOT EXISTS transactions (
         id TEXT PRIMARY KEY,
         cardid INTEGER,
         desc TEXT,
@@ -65,14 +65,14 @@ export const createTable = () => {
     );`
   
     db.transaction(tx => {
-        tx.executeSql(query, [], 
+        tx.executeSql(cardDb, [], 
             (txObj, resultSet) => {
             },
             (txObj, error) => {
                 return false
             }  
         )
-        tx.executeSql(query2, [], 
+        tx.executeSql(transactionsDb, [], 
             (txObj, resultSet) => {
                 console.log(resultSet)
             },
@@ -242,7 +242,7 @@ export const createTransactions = (cardId, transactionArray: transaction[]) => {
 
 export const getTransactions = (cardId, setTransactions) => {
     // create table if not exists
-    let query = `select * from transactions where cardid = ${cardId} order by date desc`
+    let query = `select * from transactions where cardid = ${cardId} order by id desc`
 
 
     db.transaction(tx => {        

@@ -10,7 +10,6 @@ export default function addCard () {
   const navigation = useNavigation()
   const params = useLocalSearchParams()
 
-  const {nextId} = params
   const [card, setCard] = useState({
     type: 'gc',
     name: '',
@@ -36,7 +35,6 @@ export default function addCard () {
   const addCard = () => {
     let data = {
       ...card,
-      name: card.name.length ? card.name : `Card ${nextId}`,
       number: cardNum
     }
     createCard(data, addNewCard)

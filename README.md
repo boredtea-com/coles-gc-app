@@ -15,3 +15,4 @@ Todo list:
 - [ ] Ability to change theme
 - [ ] Change theme based on device theme
 - [ ] Backups of DB periodically
+- [ ] Auto increase brightness for card barcode
