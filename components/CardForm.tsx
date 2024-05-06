@@ -32,10 +32,35 @@ export default function CardForm ({
             message: `Card number must ${size.gc} digits`
           }
         } else {
-          return {
-            hasError: cardNum.length < size.flybuys,
-            message: `Card number must be at least ${size.flybuys} digits`
-          }
+            if(cardNum.length == size.flybuys) {
+                let even = 0
+                let odd = 0
+                let lastDigit = Number(cardNum[cardNum.length - 1])
+                
+                for(let i = 0; i < cardNum.length; i++) {
+                    let num = cardNum[i]
+                    if(i % 2) {
+                            even += Number(num)
+                    } else {
+                        if(i != cardNum.length -1) odd += Number(num)
+                    }
+                }
+
+                even *= 3
+                let remaining = (even + odd) % 10
+                let checkDigit = remaining ? 10 - remaining  : 0
+                return {
+                    hasError: lastDigit != checkDigit,
+                    message: `Card number invalid, please check. Last digit should be ${checkDigit}`
+                }
+
+
+            } else {
+                return {
+                    hasError: true,
+                    message: `Card number must be ${size.flybuys} digits`
+                } 
+            }
         }
       };
 

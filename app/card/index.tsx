@@ -82,7 +82,7 @@ export default function Page() {
                 <Text style={styles.cardHeader}>PIN</Text>
                 <Text style={[styles.cardPin, {paddingBottom: 10}]}>{!revealPin ? '****' : card?.pin}</Text>
                 <Text style={styles.cardHeader}>Description</Text>
-                <Text style={{paddingBottom: 10}}>{card?.desc.length ? card.desc : '-'}</Text>
+                <Text style={styles.cardDesc}>{card?.desc.length ? card.desc : '-'}</Text>
                 <Text style={styles.cardHeader}>Balance</Text>
                 <Text style={styles.cardInfo}>${card?.balance}</Text>
                 <Text style={styles.cardHeader}>Expiry</Text>
@@ -110,7 +110,7 @@ export default function Page() {
                 : 
                 <View>
                     <Text style={styles.cardHeader}>Description</Text>
-                    <Text style={{paddingBottom: 10}}>{card?.desc.length ? card.desc : '-'}</Text>
+                    <Text style={styles.cardDesc}>{card?.desc.length ? card.desc : '-'}</Text>
                 </View>}
             </View>
         </Pressable>
@@ -123,8 +123,12 @@ const styles = StyleSheet.create({
         padding: 20
     },
     cardHeader: {
-        fontWeight: "600",
+        fontWeight: "bold",
         fontSize: 20,
+    },
+    cardDesc: {
+        paddingBottom: 10,
+        fontSize: 20
     },
     cardPin: {
         fontSize: 20,

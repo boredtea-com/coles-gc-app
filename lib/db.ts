@@ -73,8 +73,7 @@ export const createTable = () => {
 export const getCards  = (setCards: ((value: any[]) => void)) => {
     // create table if not exists
     const query = `SELECT id, name, balance, number, type FROM cards 
-    ORDER BY type ASC,
-    name ASC
+    ORDER BY type ASC
     `
 
     db.transaction(tx => {

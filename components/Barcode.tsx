@@ -13,18 +13,18 @@ const BarCode = async (options) => {
     try {
         //@ts-ignore
         svg = bwipjs.toSVG(options)
+        let [ , w, height ] = /viewBox="0 0 (\d+) (\d+)"/.exec(svg);
+        const buff = Buffer.from(svg);
+        const base64data = buff.toString('base64');
+        return (
+            <Image
+                style={{ height: Number(height), width:'100%', backgroundColor: '#ffffff'}}
+                source={`data:image/svg+xml;base64,${base64data}`}
+            />
+        );
     } catch (e) {
         // `e` may be a string or Error object
     }
-    let [ , w, height ] = /viewBox="0 0 (\d+) (\d+)"/.exec(svg);
-    const buff = Buffer.from(svg);
-    const base64data = buff.toString('base64');
-    return (
-        <Image
-            style={{ height: Number(height), width:'100%', backgroundColor: '#ffffff'}}
-            source={`data:image/svg+xml;base64,${base64data}`}
-        />
-    );
 };
 
 export default function Barcode({
@@ -64,7 +64,7 @@ export default function Barcode({
 const styles = StyleSheet.create({
     barcodeWrapper: {
         alignItems: 'center',
-        paddingBottom: 30,
+        paddingBottom: 20,
         backgroundColor: "#fff",
         borderColor: '#fff',
         borderWidth: 1,
