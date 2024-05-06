@@ -1,4 +1,4 @@
-import { Appbar, Switch, useTheme } from 'react-native-paper';
+import { Appbar, IconButton, Switch, useTheme } from 'react-native-paper';
 import { getHeaderTitle } from '@react-navigation/elements'
 import CustomMenu from './CustomMenu';
 import { PreferencesContext } from '../lib/preference';
@@ -13,10 +13,10 @@ export default function CustomNavigationBar({navigation, route, options, back, h
         <Appbar.Header>
             {back ? <Appbar.BackAction onPress={navigation.goBack} /> : null}
             <Appbar.Content title={title}/>
-            <Switch
-                color={'red'}
-                value={isThemeDark}
-                onValueChange={toggleTheme}
+            <IconButton
+                icon="theme-light-dark"
+                size={24}
+                onPress={toggleTheme}
             />
             {!back ? <CustomMenu /> : null}
             {hasCustomMenu && back ? <CustomMenu menuItems={menuItems}/> : null}

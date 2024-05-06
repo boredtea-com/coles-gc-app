@@ -25,7 +25,7 @@ export type transaction = {
     balance: string,
 }
 
-export type cardsList = Pick<cards, 'id' | 'balance' | 'name' |'number'>
+export type cardsList = Pick<cards, 'id' | 'balance' | 'name' |'number' | 'type'>
 
 export const createTable = () => {
     // create table if not exists
@@ -51,19 +51,6 @@ export const createTable = () => {
         date TEXT,
         balance TEXT
     );`
-
-    const flybuy = `CREATE TABLE IF NOT EXISTS flybuy (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT NOT NULL,
-        type TEXT NOT NULL,
-        number TEXT NOT NULL,
-        desc TEXT,
-        pin INTEGER,
-        balance REAL,
-        lastUsed TEXT,
-        lastChecked TEXT
-    );`
-  
     db.transaction(tx => {
         tx.executeSql(cardDb, [], 
             (txObj, resultSet) => {
@@ -85,7 +72,10 @@ export const createTable = () => {
 
 export const getCards  = (setCards: ((value: any[]) => void)) => {
     // create table if not exists
-    const query = `SELECT id, name, balance, number FROM cards`
+    const query = `SELECT id, name, balance, number, type FROM cards 
+    ORDER BY type ASC,
+    name ASC
+    `
 
     db.transaction(tx => {
         let resp = tx.executeSql(query, [], 

@@ -3,6 +3,7 @@ import { useCardCollectionStore, useCardStore } from "../../store/card";
 import CardForm from "@components/CardForm";
 import { useEffect, useState } from "react";
 import { cards, editCard } from "../../lib/db";
+import { View, StyleSheet } from "react-native";
 
 
 export default function Check() {
@@ -31,7 +32,16 @@ export default function Check() {
     }
 
     return (
-        <CardForm card={card} cardNum={cardNum} setCardNum={setCardNum} onSubmit={onSubmit} updateCard={updateCardData}/>
+        <View style={styles.editPage}>
+            <CardForm card={card} cardNum={cardNum} setCardNum={setCardNum} onSubmit={onSubmit} updateCard={updateCardData}/>
+        </View>
     )
 
 }
+
+const styles = StyleSheet.create({
+    editPage: {
+      padding: 10,
+      flex: 1
+    }
+  })

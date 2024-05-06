@@ -76,7 +76,9 @@ export default function Page() {
             <View style={styles.cardPage}>
                 <Barcode barcode={card.number} scale={2} height={15} type={card.type}/>
                 <View style={{padding: 10}}></View>
-
+                
+                {card.type === 'gc' ?
+                <View style={{flex: 1}}>
                 <Text style={styles.cardHeader}>PIN</Text>
                 <Text style={[styles.cardPin, {paddingBottom: 10}]}>{!revealPin ? '****' : card?.pin}</Text>
                 <Text style={styles.cardHeader}>Description</Text>
@@ -104,6 +106,12 @@ export default function Page() {
                 >
                     Show Transactions
                 </Button>
+                </View>
+                : 
+                <View>
+                    <Text style={styles.cardHeader}>Description</Text>
+                    <Text style={{paddingBottom: 10}}>{card?.desc.length ? card.desc : '-'}</Text>
+                </View>}
             </View>
         </Pressable>
     )

@@ -10,9 +10,9 @@ Todo list:
 - [ ] Unit tests
 - [ ] Able to support sorting cards
 - [ ] Able to re-arrange cards
-- [ ] Support for flybuys (EAN13 barcode, different colours, at top of list)
+- [X] Support for flybuys (EAN13 barcode, different colours, at top of list)
 - [ ] Better about page
 - [x] Ability to change theme
-- [ ] Change theme based on device theme
+- [x] Change theme based on device theme
 - [ ] Backups of DB periodically
 - [x] Auto increase brightness for card barcode
