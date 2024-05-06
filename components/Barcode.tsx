@@ -5,6 +5,7 @@ import bwipjs from 'bwip-js';
 import { Image } from 'expo-image';
 import * as Clipboard from 'expo-clipboard';
 import {Buffer} from "buffer"
+import useMaxBrightness from "../hooks/useMaxBrightness";
 
 
 const BarCode = async (options) => {
@@ -32,6 +33,9 @@ export default function Barcode({
     height
 }) {
     let [img, setImg] = useState(null)
+    const [triggerBrightness, setTriggerBrightness] = useState(true)
+    useMaxBrightness(triggerBrightness)
+
     const copyToClipboard = async () => {
         await Clipboard.setStringAsync(barcode as string);
     };
@@ -41,11 +45,11 @@ export default function Barcode({
         (async () => {
             setImg(await BarCode({text: barcode, scale, height,  bcid: 'code128'}))
         })()
-    }, [])
+    }, [barcode])
 
     return (
         <View style={styles.barcodeWrapper}>
-            <Pressable style={{width: '99%', justifyContent: 'center'}}>
+            <Pressable style={{width: '99%', justifyContent: 'center'}} onPress={() => setTriggerBrightness(!triggerBrightness)}>
                 {img ?? <Text>Cannot show image</Text>}
             </Pressable>
             <Pressable onPress={copyToClipboard}>

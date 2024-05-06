@@ -1,9 +1,7 @@
 import Barcode from "@components/Barcode";
-import Divider from "@components/Divider";
 import { Stack, useLocalSearchParams, useNavigation, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Image, Pressable, StyleSheet, View } from "react-native";
-import * as Brightness from 'expo-brightness';
 import { cards, cardsList, deleteCard, getCard } from "../../lib/db";
 import { useCardCollectionStore, useCardStore } from "../../store/card";
 import { useTheme, Button, Text, Menu } from "react-native-paper";
@@ -13,7 +11,7 @@ import CustomDialog from "@components/CustomDialog";
 export default function Page() {
     const router = useRouter()
     const params: Partial<cardsList & {index: number}> = useLocalSearchParams()
-    const { name, balance, id, number, index } = params
+    const { name, id, number, index } = params
     const [showDialog, setShowDialog] = useState(false)
 
     const deleteCardState = useCardCollectionStore((state) => state.deleteCard)
@@ -29,15 +27,15 @@ export default function Page() {
 
     const menuItems = [
         {
-            title: "Delete Card",
-            onPress: () => {
-                setShowDialog(true)
-            }
-        },
-        {
             title: "Edit Card",
             onPress: () => {
                 router.push({pathname: 'card/edit', params: {index}})
+            }
+        },
+        {
+            title: "Delete Card",
+            onPress: () => {
+                setShowDialog(true)
             }
         }
     ]
