@@ -46,6 +46,7 @@ export default function CardForm ({
           left={<TextInput.Icon icon={card.Type == "gc" ? "wallet-giftcard" :"text-account"} />}
           label={"Card Name"}
           value={card.name}
+          maxLength={20}
           mode="flat"
           onChangeText={text => updateCard({name: text})}
           style= {styles.textInput}
@@ -57,6 +58,7 @@ export default function CardForm ({
           right={<TextInput.Icon icon={"camera-iris"} onPress={() => {router.push("/camera")}}/>}
           label={"Card Number*"}
           value={cardNum}
+          maxLength={30}
           mode="outlined"
           onChangeText={text => setCardNum(text)}
           keyboardType="number-pad"

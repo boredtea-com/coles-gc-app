@@ -7,7 +7,7 @@ export default function CardItem({card, index}:{card: cardsList, index:number}) 
     return (
         <Link href={{
             pathname: '/card',
-            params: {...card, index}
+            params: {id: card.id, index}
         }} asChild>
         <Pressable>
             <View style={styles.cardWrapper}>

@@ -36,7 +36,7 @@ export default function BarcodeCamera() {
             style={[styles.camera, {width: windowWidth, height: windowHeight}]} 
             facing={facing}
             barcodeScannerSettings={{
-                barcodeTypes: ['code128']
+                barcodeTypes: ['code128', 'ean13']
             }}
             onBarcodeScanned={(scanningResult) => {
                 console.log(scanningResult.data)

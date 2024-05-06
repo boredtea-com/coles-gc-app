@@ -42,7 +42,7 @@ export default function HomeLayout() {
                         <Stack.Screen
                             name="card/index"
                             // @ts-ignore
-                            options={({ route }) => ({ title: route.params.name })}
+                            options={({ route }) => ({ title: route.params.name, animation: 'ios' })}
                         />
                         <Stack.Screen
                             name="card/add"
@@ -55,6 +55,13 @@ export default function HomeLayout() {
                             name="card/check"
                             options={{
                                 title: "Check Balance",
+                                animation: 'ios'
+                            }}
+                        />
+                        <Stack.Screen
+                            name="card/edit"
+                            options={{
+                                title: "Edit Card",
                                 animation: 'ios'
                             }}
                         />

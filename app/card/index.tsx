@@ -11,7 +11,7 @@ import CustomDialog from "@components/CustomDialog";
 export default function Page() {
     const router = useRouter()
     const params: Partial<cardsList & {index: number}> = useLocalSearchParams()
-    const { name, id, number, index } = params
+    const { id, index } = params
     const [showDialog, setShowDialog] = useState(false)
 
     const deleteCardState = useCardCollectionStore((state) => state.deleteCard)
@@ -21,6 +21,10 @@ export default function Page() {
 
     useEffect(() => {
         getCard(id, setCard)
+        return () => {
+            //Clean card store
+            setCard(null)
+        }
     }, [])
 
     const [revealPin, setRevealPin] = useState(false)
@@ -40,6 +44,14 @@ export default function Page() {
         }
     ]
 
+    if(card == null) {
+        return (
+            <View>
+                <Text>Loading Card</Text>
+            </View>
+        )
+    }
+
     return (
         <Pressable style={{flex: 1}} onPress={(e) => setRevealPin(!revealPin)}>
             <CustomDialog 
@@ -56,13 +68,13 @@ export default function Page() {
             
             <Stack.Screen
                 options={{
-                    title: card?.name ?? name,
+                    title: card.name,
                     animation: 'ios',
                     header: (props: any) => <CustomNavigationBar {...props} hasCustomMenu={true} menuItems={menuItems}  />
                 }}
             />
             <View style={styles.cardPage}>
-                <Barcode barcode={card?.number ?? number} scale={2} height={15}/>
+                <Barcode barcode={card.number} scale={2} height={15}/>
                 <View style={{padding: 10}}></View>
 
                 <Text style={styles.cardHeader}>PIN</Text>
@@ -80,7 +92,7 @@ export default function Page() {
                 <Text style={styles.lastCheck}>Last Checked: {card?.lastChecked ?? '-'}</Text>
                 <Button 
                     mode="contained"
-                    onPress={() =>{ 
+                    onPress={() => { 
                     router.push({pathname: 'card/check', params: {index}})
                 }}>
                     Check Balance
@@ -88,9 +100,8 @@ export default function Page() {
                 <View style={{padding: 10}}></View>
                 <Button
                     mode="contained"
-                    onPress={() =>{ 
-                        router.push({pathname: 'card/transaction', params: {id: card.id}})
-                }}>
+                    onPress={() => { router.push({pathname: 'card/transaction', params: {id: card.id}})}}
+                >
                     Show Transactions
                 </Button>
             </View>

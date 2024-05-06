@@ -198,15 +198,18 @@ export const createCard = (data: {
     // create table if not exists
     const query = "INSERT INTO cards (name, type, number, desc, pin, balance) VALUES(?,?,?,?,?,?)"
 
-    db.transaction(tx => {
-        let resp = tx.executeSql(query, [data.name, data.type,data.number,data.desc,data.pin,data.balance], 
-            (txObj, resultSet) => {
-                setNewCards({id: resultSet.insertId ,...data})
-            },
-            //@ts-ignore
-            (txObj, error) => console.log(error)
-            
-        )
+    db.transactionAsync( async tx => {
+        let result = await tx.executeSqlAsync(query, [data.name, data.type,data.number,data.desc,data.pin,data.balance])
+        let newName = data.name
+        //Auto Generate Name If not set
+        if(!data.name) {
+            newName = (data.type == 'gc' ? "Gift Card" : "Flybuys") + " " +result.insertId
+
+            await tx.executeSqlAsync(`UPDATE cards SET name = '${newName}' WHERE  id = ${result.insertId}`, [])
+        }
+
+
+        setNewCards({id: result.insertId ,...data, name: newName})
     });
 }
 

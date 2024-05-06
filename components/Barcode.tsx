@@ -33,8 +33,8 @@ export default function Barcode({
     height
 }) {
     let [img, setImg] = useState(null)
-    const [triggerBrightness, setTriggerBrightness] = useState(true)
-    useMaxBrightness(triggerBrightness)
+    const [triggerBrightness, setTriggerBrightness] = useState(false)
+    useMaxBrightness(!triggerBrightness)
 
     const copyToClipboard = async () => {
         await Clipboard.setStringAsync(barcode as string);
