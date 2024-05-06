@@ -16,3 +16,10 @@ Todo list:
 - [x] Change theme based on device theme
 - [ ] Backups of DB periodically
 - [x] Auto increase brightness for card barcode
+
+
+Commands:
+- `npx expo run:android`: Command to run the app on your android device
+- `eas build -p android --local --profile preview`: Command to build android locally using preview profile
+- `eas build -p android`: Command to build using eas
+- `npx expo run`: Command to run the app on expo go
