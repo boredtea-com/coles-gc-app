@@ -30,7 +30,8 @@ const BarCode = async (options) => {
 export default function Barcode({
     barcode,
     scale,
-    height
+    height,
+    type
 }) {
     let [img, setImg] = useState(null)
     const [triggerBrightness, setTriggerBrightness] = useState(false)
@@ -43,7 +44,8 @@ export default function Barcode({
 
     useEffect(() => {
         (async () => {
-            setImg(await BarCode({text: barcode, scale, height,  bcid: 'code128'}))
+            let bcid = type === 'gc' ? 'code128' : 'ean13'
+            setImg(await BarCode({text: barcode, scale, height,  bcid: bcid}))
         })()
     }, [barcode])
 

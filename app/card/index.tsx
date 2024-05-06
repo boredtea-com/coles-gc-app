@@ -74,7 +74,7 @@ export default function Page() {
                 }}
             />
             <View style={styles.cardPage}>
-                <Barcode barcode={card.number} scale={2} height={15}/>
+                <Barcode barcode={card.number} scale={2} height={15} type={card.type}/>
                 <View style={{padding: 10}}></View>
 
                 <Text style={styles.cardHeader}>PIN</Text>
