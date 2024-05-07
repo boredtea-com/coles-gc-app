@@ -4,8 +4,6 @@ import { Button, Text } from "react-native-paper";
 
 
 export default function About() {
-    const navigation = useNavigation()
-    const router = useRouter()
     const params = useLocalSearchParams()
 
     const { } = params

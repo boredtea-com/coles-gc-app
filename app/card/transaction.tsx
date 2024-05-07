@@ -8,7 +8,6 @@ import { Card, Text } from "react-native-paper";
 
 export default function TransactionHistory() {
     const [transactions, setTransactions] = useState([])
-    const router = useRouter()
     const params = useLocalSearchParams()
 
     const { id } = params

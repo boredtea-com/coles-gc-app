@@ -1,11 +1,10 @@
 import { StatusBar } from 'expo-status-bar';
-import { Button, FlatList, Image, StyleSheet, Text, TextInput, View } from 'react-native';
-import { useCallback, useEffect, useState } from 'react'
+import { StyleSheet, View } from 'react-native';
+import { useEffect } from 'react'
 import CardList from '@components/CardList'
-import Menu from '@components/CustomMenu'
-import { FAB, useTheme } from "react-native-paper"
-import { SplashScreen, router, useFocusEffect } from 'expo-router'
-import { createTable, getCards, createCard, deleteCard } from '../lib/db';
+import { FAB } from "react-native-paper"
+import { router } from 'expo-router'
+import { createTable, getCards } from '../lib/db';
 import { useCardCollectionStore } from '../store/card';
 
 export default function App() {

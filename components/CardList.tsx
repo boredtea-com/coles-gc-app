@@ -1,8 +1,6 @@
 import { FlashList } from "@shopify/flash-list";
 import CardItem from "./CardItem";
-import { StyleSheet } from "react-native";
-import Divider from "./Divider";
-import { cards, cardsList } from "../lib/db";
+import { cardsList } from "../lib/db";
 import { useState } from "react";
 
 

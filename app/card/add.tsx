@@ -8,7 +8,6 @@ import CardForm from "@components/CardForm"
 
 export default function addCard () {
   const navigation = useNavigation()
-  const params = useLocalSearchParams()
 
   const [card, setCard] = useState({
     type: 'gc',

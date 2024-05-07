@@ -1,7 +1,6 @@
 import { useRouter } from "expo-router"
-import { useEffect } from "react"
 import { View, StyleSheet } from "react-native"
-import { Button, HelperText, RadioButton, TextInput, Text } from "react-native-paper"
+import { Button, HelperText, TextInput } from "react-native-paper"
 
 let size = {
     gc: 30,
