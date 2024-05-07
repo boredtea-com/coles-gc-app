@@ -57,7 +57,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     cardAmount: {
-        fontSize: 15,
-        fontWeight: '200'
+        fontSize: 20,
+        fontWeight: '300'
     }
 })

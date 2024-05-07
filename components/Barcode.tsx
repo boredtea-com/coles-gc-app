@@ -24,6 +24,9 @@ const BarCode = async (options) => {
         );
     } catch (e) {
         // `e` may be a string or Error object
+        return (
+            <Text style={{textAlign: "center"}}>Unable to show barcode</Text>
+        )
     }
 };
 
@@ -52,7 +55,7 @@ export default function Barcode({
     return (
         <View style={styles.barcodeWrapper}>
             <Pressable style={{width: '99%', justifyContent: 'center'}} onPress={() => setTriggerBrightness(!triggerBrightness)}>
-                {img ?? <Text>Cannot show image</Text>}
+                {img ?? <Text style={{textAlign: "center"}}>Cannot show image</Text>}
             </Pressable>
             <Pressable onPress={copyToClipboard}>
                     <Text style={styles.cardNo}>{barcode}</Text> 

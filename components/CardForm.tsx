@@ -93,6 +93,7 @@ export default function CardForm ({
           left={<TextInput.Icon icon={"text-short"} />}
           label={"Card Description"}
           value={card.desc}
+          maxLength={100}
           mode="outlined"
           onChangeText={text => updateCard({desc: text})}
           style= {styles.textInput}

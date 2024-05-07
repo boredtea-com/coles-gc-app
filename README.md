@@ -17,9 +17,9 @@ Todo list:
 - [ ] Backups of DB periodically
 - [x] Auto increase brightness for card barcode
 
-
+ 
 Commands:
 - `npx expo run:android`: Command to run the app on your android device
 - `eas build -p android --local --profile preview`: Command to build android locally using preview profile
-- `eas build -p android`: Command to build using eas
+- `eas build -p android`: Command to build using eas for android
 - `npx expo run`: Command to run the app on expo go
