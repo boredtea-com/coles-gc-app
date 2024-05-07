@@ -31,7 +31,16 @@ export const useCardCollectionStore = create<CardCollectionState>((set) => ({
     cards: [],
     addCardNum: (by) => set((state) => ({cardNum: by})),
     setCards: (cards) =>  set((state) => ({cards: cards})),
-    addCard: (card) =>  set((state) => ({cards: [...state.cards, card]})),
+    addCard: (card) =>  set((state) => {
+        if(card.type == 'gc') return {cards: [...state.cards, card]}
+        
+        let cards = [...state.cards]
+        let flybuysLast = cards.findLastIndex(o => o.type === 'flybuys') + 1
+
+        cards.splice(flybuysLast, 0, card)
+
+        return {cards: cards}
+    }),
     deleteCard: (id) =>  set((state) => ({cards: [...state.cards].filter(o => o.id != id)})),
     updateCard: (index, data) => set((state) => {
         let cards = [...state.cards]
