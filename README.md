@@ -6,7 +6,7 @@ This react native app allows you to easily manage your Coles gift cards.
 
 Currently the roadmap is to support Android only as I do not have any IOS devices.
 
-Todo list:
+## Todo list:
 - [ ] Unit tests
 - [ ] Able to support sorting cards
 - [ ] Able to re-arrange cards
@@ -19,8 +19,17 @@ Todo list:
 - [x] Auto increase brightness for card barcode
 
  
-Commands:
+## Commands:
 - `npx expo run:android`: Command to run the app on your android device
 - `eas build -p android --local --profile preview`: Command to build android locally using preview profile
 - `eas build -p android`: Command to build using eas for android
 - `npx expo run`: Command to run the app on expo go
+
+
+## Requirements
+
+As this is an expo app using SDK 50 we need a few things to run and build this app. 
+
+Please follow the following guide on expo.dev website: 
+
+

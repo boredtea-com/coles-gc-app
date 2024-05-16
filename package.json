@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@expo/vector-icons": "^14.0.0",
+    "@react-native-async-storage/async-storage": "1.21.0",
     "@react-navigation/drawer": "^6.6.15",
     "@shopify/flash-list": "1.6.3",
     "@types/react": "~18.2.45",
@@ -37,8 +38,7 @@
     "react-navigation": "^5.0.0",
     "react-zlib-js": "^1.0.5",
     "typescript": "^5.3.0",
-    "zustand": "^4.5.2",
-    "@react-native-async-storage/async-storage": "1.21.0"
+    "zustand": "^4.5.2"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"

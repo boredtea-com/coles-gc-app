@@ -1,6 +1,6 @@
-import { Button, Pressable, Text, View, Appearance } from "react-native";
-import { Stack, SplashScreen } from "expo-router";
-import { MD3DarkTheme, MD3LightTheme, PaperProvider, adaptNavigationTheme, useTheme } from 'react-native-paper';
+import { View, Appearance } from "react-native";
+import { Stack } from "expo-router";
+import { MD3DarkTheme, MD3LightTheme, PaperProvider, adaptNavigationTheme } from 'react-native-paper';
 import CustomNavigationBar from "@components/CustomNavigationBar";
 import {
     ThemeProvider,
@@ -11,7 +11,9 @@ import merge from 'deepmerge';
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { PreferencesContext } from "../lib/preference";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as SplashScreen from 'expo-splash-screen';
 
+SplashScreen.preventAutoHideAsync();
 
 const { LightTheme, DarkTheme } = adaptNavigationTheme({
     reactNavigationLight: NavigationDefaultTheme,
@@ -34,6 +36,7 @@ export default function HomeLayout() {
                     setIsThemeDark(savedTheme === "true")
                 }
                 Appearance.setColorScheme(savedTheme === "true" ? 'dark' : 'light')
+                await SplashScreen.hideAsync()
             } catch (error) {
                 console.log("Error loading theme", error)
             }

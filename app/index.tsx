@@ -16,7 +16,6 @@ export default function App() {
     getCards(setCards)
   }, [])
 
-
   return (
     <View style={[styles.container]}>
         <StatusBar style="auto" />
