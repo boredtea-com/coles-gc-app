@@ -1,5 +1,5 @@
 import * as SQLite from 'expo-sqlite';
-const db = SQLite.openDatabase('cards3.db')
+const db = SQLite.openDatabaseSync('cards3.db')
 
 
 export type cards = {
@@ -8,7 +8,7 @@ export type cards = {
     type: string,
     number: string,
     desc?: string,
-    pin?: number,
+    pin?: string,
     balance?: number,
     lastUsed?: string,
     lastChecked?: string,
@@ -27,7 +27,7 @@ export type transaction = {
 
 export type cardsList = Pick<cards, 'id' | 'balance' | 'name' |'number' | 'type'>
 
-export const createTable = () => {
+export const createTable = async () => {
     // create table if not exists
     const cardDb = `CREATE TABLE IF NOT EXISTS cards (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -35,7 +35,7 @@ export const createTable = () => {
         type TEXT NOT NULL,
         number TEXT NOT NULL,
         desc TEXT,
-        pin INTEGER,
+        pin TEXT,
         balance REAL,
         lastUsed TEXT,
         lastChecked TEXT,
@@ -51,67 +51,36 @@ export const createTable = () => {
         date TEXT,
         balance TEXT
     );`
-    db.transaction(tx => {
-        tx.executeSql(cardDb, [], 
-            (txObj, resultSet) => {
-            },
-            (txObj, error) => {
-                return false
-            }  
-        )
-        tx.executeSql(transactionsDb, [], 
-            (txObj, resultSet) => {
-                console.log(resultSet)
-            },
-            (txObj, error) => {
-                return false
-            }  
-        )
-    });
+    await db.runAsync(cardDb)
+
+    await db.runAsync(transactionsDb)
 }
 
-export const getCards  = (setCards: ((value: any[]) => void)) => {
+export const getCards  = async (setCards: ((value: any[]) => void)) => {
     // create table if not exists
     const query = `SELECT id, name, balance, number, type FROM cards 
     ORDER BY type ASC
     `
 
-    db.transaction(tx => {
-        let resp = tx.executeSql(query, [], 
-            (txObj, resultSet) => {
-                console.log("Obtained cards", resultSet?.rows?.length)
-                if(resultSet.rows) {
-                    setCards(resultSet.rows._array)
-                }
-            },
-            //@ts-ignore
-            (txObj, error) => console.log(error)
-            
-        )
-    });
+    let response = await db.getAllAsync<cards>(query)
+
+    console.log("Obtained cards", response)
+
+    setCards(response)
+
 }
 
-export const getCard  = (id: number, setCard: ((value:any) => void)) => {
+export const getCard  = async (id: number, setCard: ((value:any) => void)) => {
     // create table if not exists
     const query = `SELECT *
     FROM cards where id = ${id}`
 
-    db.transaction(tx => {
-        let resp = tx.executeSql(query, [], 
-            (txObj, resultSet) => {
-                console.log("Obtained cards", resultSet.rows.item(0))
-                if(resultSet.rows) {
-                    setCard(resultSet.rows.item(0))
-                }
-            },
-            //@ts-ignore
-            (txObj, error) => console.log(error)
-            
-        )
-    });
+    let response: cards = await db.getFirstAsync(query)
+
+    setCard(response)
 }
 
-export const editCard  = (card: cards, setCard) => {
+export const editCard  = async (card: cards, setCard) => {
     // create table if not exists
     const query = `UPDATE cards
     SET balance = ?,
@@ -123,23 +92,26 @@ export const editCard  = (card: cards, setCard) => {
     RETURNING *
     `
 
-    db.transaction(tx => {
-        let resp = tx.executeSql(query, [card.balance, card.desc, card.number, card.name, card.pin, card.id], 
-            (txObj, resultSet) => {
-                console.log(resultSet)
-                if(resultSet.rows) {
-                    setCard(resultSet.rows.item(0))
-                }
-            },
-            //@ts-ignore
-            (txObj, error) => console.log(error)
-            
-        )
-    });
+    const statement = await db.prepareAsync(query);
+
+    try {
+        const result = await statement.executeAsync<cards>(card.balance, card.desc, card.number, card.name, card.pin, card.id);
+        console.log('lastInsertRowId:', result.lastInsertRowId);
+        console.log('changes:', result.changes);
+        for await (const row of result) {
+            console.log('name:', row.name);
+            setCard(row)
+        }
+
+
+    } catch (err) {
+        console.log(err)
+    } finally {
+        await statement.finalizeAsync();
+    }
 }
 
-export const updateCard  = (id: number, balance, expiryDate, lastUsed, setCard) => {
-    // create table if not exists
+export const updateCard  = async (id: number, balance, expiryDate, lastUsed, setCard) => {
     const query = `UPDATE cards
     SET balance = ${balance},
         expiryDate  = '${expiryDate}',
@@ -148,61 +120,55 @@ export const updateCard  = (id: number, balance, expiryDate, lastUsed, setCard) 
     where id = ${id}
     RETURNING *
     `
-    console.log(query)
+    const statement = await db.prepareAsync(query);
 
-    db.transaction(tx => {
-        let resp = tx.executeSql(query, [], 
-            (txObj, resultSet) => {
-                console.log(resultSet)
-                if(resultSet.rows) {
-                    console.log(resultSet.rows.item(0))
-                    setCard(resultSet.rows.item(0))
-                }
-            },
-            //@ts-ignore
-            (txObj, error) => console.log(error)
-            
-        )
-    });
-}
-
-export const deleteCard = (id) => {
-    db.transaction(tx => {
-        tx.executeSql('DELETE FROM cards WHERE id = ?', [id], 
-            (txObj, resultSet) => {
-                console.log(resultSet)
-            },
-            (txObj, error) => {
-                console.log(error)
-                return false
-            }
-            
-        )
-    });
-}
-
-export const createCard = (data: {
-    name, type, number, desc, pin, balance
-}, setNewCards: (card: cards) => void) => {
-    // create table if not exists
-    const query = "INSERT INTO cards (name, type, number, desc, pin, balance) VALUES(?,?,?,?,?,?)"
-
-    db.transactionAsync( async tx => {
-        let result = await tx.executeSqlAsync(query, [data.name, data.type,data.number,data.desc,data.pin,data.balance])
-        let newName = data.name
-        //Auto Generate Name If not set
-        if(!data.name) {
-            newName = (data.type == 'gc' ? "Gift Card" : "Flybuys") + " " +result.insertId
-
-            await tx.executeSqlAsync(`UPDATE cards SET name = '${newName}' WHERE  id = ${result.insertId}`, [])
+    try {
+        const result = await statement.executeAsync<cards>();
+        console.log('lastInsertRowId:', result.lastInsertRowId);
+        console.log('changes:', result.changes);
+        for await (const row of result) {
+            console.log('name:', row.name);
+            setCard(row)
         }
 
 
-        setNewCards({id: result.insertId ,...data, name: newName})
-    });
+    } catch (err) {
+        console.log(err)
+    } finally {
+        await statement.finalizeAsync();
+    }
 }
 
-export const createTransactions = (cardId, transactionArray: transaction[]) => {
+export const deleteCard = async (id) => {
+    try {
+        await db.runAsync('DELETE FROM cards WHERE id = ?', [id])
+    } catch (err) {
+        console.log(err)
+    }
+}
+
+export const createCard = async (data: {
+    name, type, number, desc, pin, balance
+}, setNewCards: (card: cards) => void) => {
+    const query = "INSERT INTO cards (name, type, number, desc, pin, balance) VALUES(?,?,?,?,?,?)"
+
+    const statement = await db.prepareAsync(query);
+    try {
+        let response = await statement.executeAsync<cards>(data.name, data.type,data.number,data.desc,data.pin,data.balance)
+        let newName = data.name
+        //Auto Generate Name If not set
+        if(!data.name) {
+            newName = (data.type == 'gc' ? "Gift Card" : "Flybuys") + " " + response.lastInsertRowId
+
+            await db.runAsync(`UPDATE cards SET name = '${newName}' WHERE  id = ${response.lastInsertRowId}`)
+        }
+        setNewCards({id: response.lastInsertRowId ,...data, name: newName})
+    } catch (err) {
+        console.log(err)
+    }
+}
+
+export const createTransactions = async (cardId, transactionArray: transaction[]) => {
     // create table if not exists
     let deleteQuery = `DELETE FROM transactions where cardid = ${cardId};`
     let query = `INSERT INTO transactions (id, cardid, desc, store, amount, date, balance) VALUES`
@@ -212,41 +178,20 @@ export const createTransactions = (cardId, transactionArray: transaction[]) => {
         return allData.concat([data.id, data.cardid ,data.desc, data.store,data.amount,data.date, data.balance])
     }, [])
 
+    try {
+        await db.runAsync(deleteQuery)
 
-    db.transaction(tx => {        
-        tx.executeSql(deleteQuery, [], 
-            (txObj, resultSet) => {
-            },
-            //@ts-ignore
-            (txObj, error) => console.log(error)
-            
-        )
-        tx.executeSql(query, fields, 
-            (txObj, resultSet) => {
-                console.log(resultSet)
-            },
-            //@ts-ignore
-            (txObj, error) => console.log(error)
-            
-        )
-    });
+        await db.runAsync(query, fields)
+    } catch (err) {
+        console.log(err)
+    }
 }
 
-export const getTransactions = (cardId, setTransactions) => {
+export const getTransactions = async (cardId, setTransactions) => {
     // create table if not exists
     let query = `select * from transactions where cardid = ${cardId} order by id desc`
 
+    let response = await db.getAllAsync<cards>(query)
 
-    db.transaction(tx => {        
-        tx.executeSql(query, [], 
-            (txObj, resultSet) => {
-                if(resultSet.rows.length) {
-                    setTransactions(resultSet.rows._array)
-                }
-            },
-            //@ts-ignore
-            (txObj, error) => console.log(error)
-            
-        )
-    });
+    setTransactions(response)
 }

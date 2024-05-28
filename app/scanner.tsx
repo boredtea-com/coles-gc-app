@@ -1,19 +1,49 @@
-import { CameraView, CameraType, useCameraPermissions } from 'expo-camera/next';
+import { CameraView, CameraType, useCameraPermissions, Camera, BarcodeScanningResult} from 'expo-camera';
 import { useState } from 'react';
 import { Button, StyleSheet, Text, View, Dimensions } from 'react-native'
 import { useRouter } from 'expo-router';
-import { FAB } from 'react-native-paper';
+import { FAB, Snackbar } from 'react-native-paper';
 import { useCardCollectionStore } from '../store/card';
+import * as ImagePicker from 'expo-image-picker';
 
 export default function BarcodeCamera() {
+    const [visibleSnack, setVisibleSnack] = useState(false)
+    const [snackMessage, setSnackMessage] = useState('')
+    const onDismissSnackBar = () => setVisibleSnack(false);
+
     const router = useRouter()
-
-
     const setCardNum = useCardCollectionStore((state) => state.addCardNum)
     const [facing, setFacing] = useState('back' as any);
     const [permission, requestPermission] = useCameraPermissions();
     const windowWidth = Dimensions.get('window').width
     const windowHeight = (windowWidth / 3) * 4
+
+    const decode = async () => {
+      try {
+        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync()
+         if (status === 'granted') {
+           const result = await ImagePicker.launchImageLibraryAsync({
+              mediaTypes: ImagePicker.MediaTypeOptions.Images,
+              //allowsEditing: true,
+              //aspect: [4, 3],
+              quality: 1,
+           })
+           if (result && result.assets.length) {
+              const results: BarcodeScanningResult[] = await Camera.scanFromURLAsync(result.assets[0].uri, ["code128", "ean13"]) as any
+
+              if(!results || results && !results.length) {
+                setSnackMessage('No barcodes detected in photo')
+                setVisibleSnack(true)
+              } else {
+                setCardNum(results[0].data)
+                router.back()
+              }
+           }
+         }
+      } catch (error) {
+        console.debug(error)
+      }
+    }
 
     if (!permission) {
         // Camera permissions are still loading
@@ -48,7 +78,19 @@ export default function BarcodeCamera() {
         <FAB
             icon="image"
             style={styles.fab}
+            onPress={() => decode()}
         />
+        <Snackbar
+          visible={visibleSnack}
+          onDismiss={onDismissSnackBar}
+          action={{
+            label: 'Dismiss',
+            onPress: () => {
+              // Do something
+            },
+          }}>
+          {snackMessage}
+        </Snackbar>
         </View>
     );
 }

@@ -25,7 +25,7 @@ export default function Check() {
 
 
     const onSubmit = () => {
-        let data = {...card, pin: card.pin ? Number(card.pin) : undefined, balance: card.balance ? Number(card.balance) : undefined, number: cardNum}
+        let data = {...card, pin: card.pin ? card.pin : undefined, balance: card.balance ? Number(card.balance) : undefined, number: cardNum}
         editCard(data, setCardStore)
         updateCardsArray(params.index, data)
         router.back()
