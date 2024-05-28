@@ -114,8 +114,9 @@ export default function HomeLayout() {
                                 }}
                             />
                             <Stack.Screen
-                                name="camera" 
+                                name="scanner" 
                                 options={{
+                                    title: "Scanner",
                                     animation: 'ios'
                                 }} 
                             />

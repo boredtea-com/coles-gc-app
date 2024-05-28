@@ -79,7 +79,7 @@ export default function CardForm ({
 
         <TextInput
           left={<TextInput.Icon icon={"card-text"} />}
-          right={<TextInput.Icon icon={"camera-iris"} onPress={() => {router.push("/camera")}}/>}
+          right={<TextInput.Icon icon={"camera-iris"} onPress={() => {router.push("/scanner")}}/>}
           label={"Card Number*"}
           value={cardNum}
           maxLength={30}
