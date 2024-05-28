@@ -2,11 +2,15 @@ import { CameraView, CameraType, useCameraPermissions, Camera, BarcodeScanningRe
 import { useState } from 'react';
 import { Button, StyleSheet, Text, View, Dimensions } from 'react-native'
 import { useRouter } from 'expo-router';
-import { FAB } from 'react-native-paper';
+import { FAB, Snackbar } from 'react-native-paper';
 import { useCardCollectionStore } from '../store/card';
 import * as ImagePicker from 'expo-image-picker';
 
 export default function BarcodeCamera() {
+    const [visibleSnack, setVisibleSnack] = useState(false)
+    const [snackMessage, setSnackMessage] = useState('')
+    const onDismissSnackBar = () => setVisibleSnack(false);
+
     const router = useRouter()
     const setCardNum = useCardCollectionStore((state) => state.addCardNum)
     const [facing, setFacing] = useState('back' as any);
@@ -25,9 +29,12 @@ export default function BarcodeCamera() {
               quality: 1,
            })
            if (result && result.assets.length) {
-              const results = await Camera.scanFromURLAsync(result.assets[0].uri, ["code128", "ean13"]) as any
+              const results: BarcodeScanningResult[] = await Camera.scanFromURLAsync(result.assets[0].uri, ["code128", "ean13"]) as any
 
-              if(results?.length && results[0].data) {
+              if(!results || results && !results.length) {
+                setSnackMessage('No barcodes detected in photo')
+                setVisibleSnack(true)
+              } else {
                 setCardNum(results[0].data)
                 router.back()
               }
@@ -73,6 +80,17 @@ export default function BarcodeCamera() {
             style={styles.fab}
             onPress={() => decode()}
         />
+        <Snackbar
+          visible={visibleSnack}
+          onDismiss={onDismissSnackBar}
+          action={{
+            label: 'Dismiss',
+            onPress: () => {
+              // Do something
+            },
+          }}>
+          {snackMessage}
+        </Snackbar>
         </View>
     );
 }
