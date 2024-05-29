@@ -19,7 +19,7 @@ export default function Check() {
     const runFirst = `
         document.getElementById("cardNumber").scrollIntoView();
         document.querySelector("#cardNumber").value = '${card.number.slice(card.number.length - 17)}';
-        document.querySelector("#cardPIN").value = ${card.pin};
+        document.querySelector("#cardPIN").value = '${card.pin}';
         true; // note: this is required, or you'll sometimes get silent failures
     `;
 
